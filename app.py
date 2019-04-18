@@ -18,6 +18,21 @@ class QuizResults(db.Model):
     def __repr__(self):
         return f"{self.score}"
 
+class QuizQuestions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    Question = db.Column(db.String(350))
+    Option1 = db.Column(db.String(350)) 
+    Option2 = db.Column(db.String(350)) 
+    Option3 = db.Column(db.String(350))
+    Answer = db.Column(db.Integer)
+
+def addUserScore(marks):
+    new = QuizResults(score=marks)
+    db.session.add(new)
+    db.session.commit()
+
+def getUserMarks():
+    return QuizResults.query.all()
 
 @app.route("/")
 def IntroductionPage():
@@ -41,7 +56,13 @@ def ManualPage():
 
 @app.route("/Quizzes")
 def QuizzesPage():
-    return render_template('Quizzes.html')
+    Questions = QuizQuestions.query.all()
+    answers = []
+    for i in Questions:
+        answers.append(i.Answer)
+    return render_template('Quizzes.html',
+        QuestionList = Questions,
+        ListAnswers = answers)
 
 @app.route("/Procedure")
 def ProcedurePage():
@@ -62,18 +83,32 @@ def ResultPage():
     for i in QuizResults.query.all():
         if int(str(i))>=0 and int(str(i))<=10:
             histodata[int(str(i))]+=1
+        userMarksList = getUserMarks()
     return render_template('Results.html',
-        tscore=QuizResults.query.all()[-1], 
-        scores=QuizResults.query.all(),
+        tscore=userMarksList[-1],
+        scores=userMarksList,
         histoData=histodata)
 
 @app.route("/add_score/<marks>")
 def addScrore(marks):
-    new = QuizResults(score=marks)
-    db.session.add(new)
-    db.session.commit()
-    #return redirect(url_for(QuizzesPage))
+    addUserScore(marks)
     return redirect(url_for('ResultPage'))
+
+# test to make sure the controller with database works perfectly
+# get histodata
+def histoDataTest():
+    histodata=[0,0,0,0,0,0,0,0,0,0,0]
+    for i in QuizResults.query.all():
+        if int(str(i))>=0 and int(str(i))<=10:
+            histodata[int(str(i))]+=1
+    return histodata
+
+# test questions
+def QuestionTest():
+    Questions = QuizQuestions.query.all()
+    return Questions
+
+# tests are written in test_app.py
 
 if __name__ == '__main__':
     app.run(debug=True)
