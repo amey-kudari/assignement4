@@ -18,6 +18,14 @@ class QuizResults(db.Model):
     def __repr__(self):
         return f"{self.score}"
 
+class FeedbackDB(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    feedbackText = db.Column(db.String(350))
+
+    def __repr__(self):
+        return "{self.feedbackText}"
+
 
 @app.route("/")
 def IntroductionPage():
@@ -74,6 +82,13 @@ def addScrore(marks):
     db.session.commit()
     #return redirect(url_for(QuizzesPage))
     return redirect(url_for('ResultPage'))
+
+@app.route("/add_feedback/<feedbackText>")
+def add_feedback(feedbackText):
+    new = FeedbackDB(feedbackText=feedbackText)
+    db.session.add(new)
+    db.session.commit()
+    return redirect(url_for('FeedbackPage'))
 
 if __name__ == '__main__':
     app.run(debug=True)
