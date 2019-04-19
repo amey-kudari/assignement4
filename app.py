@@ -1,15 +1,19 @@
-from flask import Flask, render_template, url_for, flash, redirect
+from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-global_score=5
+
+# APP AND DB CONFIGS
 
 app = Flask(__name__)
-# name will be changed later, configs will be added later
-app.secret_key = 'super secret key'
-
+app.secret_key = 'THANOS DIES'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
+
+# END OF APP AND DB CONFIGS
+
+
+# DATABASE MODELS
 
 class QuizResults(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,7 +22,6 @@ class QuizResults(db.Model):
     def __repr__(self):
         return f"{self.score}"
 
-<<<<<<< HEAD
 class QuizQuestions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Question = db.Column(db.String(350))
@@ -27,6 +30,15 @@ class QuizQuestions(db.Model):
     Option3 = db.Column(db.String(350))
     Answer = db.Column(db.Integer)
 
+class feedbacks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(350))
+    feedbackText = db.Column(db.String(350)) 
+
+# END OF DATABASE MODELS
+
+# DATABASE INTERACTION FUNCTIONS / CONTROLLERS IN THIS CASE
+
 def addUserScore(marks):
     new = QuizResults(score=marks)
     db.session.add(new)
@@ -34,16 +46,11 @@ def addUserScore(marks):
 
 def getUserMarks():
     return QuizResults.query.all()
-=======
-class FeedbackDB(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    feedbackText = db.Column(db.String(350))
 
-    def __repr__(self):
-        return "{self.feedbackText}"
+# END OF UTILITY FUNCTIONS
 
->>>>>>> d6cdbbcfb1a28495de2265ecc468328149182691
+
+# ROUTES
 
 @app.route("/")
 def IntroductionPage():
@@ -105,7 +112,16 @@ def addScrore(marks):
     addUserScore(marks)
     return redirect(url_for('ResultPage'))
 
-<<<<<<< HEAD
+@app.route("/add_feedback", methods = ['POST', 'GET'])
+def add_feedback():
+    Name = request.form['name']
+    FeedbackText = request.form['feedback']
+    temp = feedbacks(name=Name, feedbackText = FeedbackText)
+    db.session.add(temp)
+    db.session.commit()
+    return redirect(url_for('FeedbackPage'))
+
+#<<<<<<< HEAD
 # test to make sure the controller with database works perfectly
 # get histodata
 def histoDataTest():
@@ -121,14 +137,8 @@ def QuestionTest():
     return Questions
 
 # tests are written in test_app.py
-=======
-@app.route("/add_feedback/<feedbackText>")
-def add_feedback(feedbackText):
-    new = FeedbackDB(feedbackText=feedbackText)
-    db.session.add(new)
-    db.session.commit()
-    return redirect(url_for('FeedbackPage'))
->>>>>>> d6cdbbcfb1a28495de2265ecc468328149182691
+#=======
+#>>>>>>> d6cdbbcfb1a28495de2265ecc468328149182691
 
 if __name__ == '__main__':
     app.run(debug=True)
