@@ -18,6 +18,7 @@ class QuizResults(db.Model):
     def __repr__(self):
         return f"{self.score}"
 
+<<<<<<< HEAD
 class QuizQuestions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     Question = db.Column(db.String(350))
@@ -33,6 +34,16 @@ def addUserScore(marks):
 
 def getUserMarks():
     return QuizResults.query.all()
+=======
+class FeedbackDB(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    feedbackText = db.Column(db.String(350))
+
+    def __repr__(self):
+        return "{self.feedbackText}"
+
+>>>>>>> d6cdbbcfb1a28495de2265ecc468328149182691
 
 @app.route("/")
 def IntroductionPage():
@@ -94,6 +105,7 @@ def addScrore(marks):
     addUserScore(marks)
     return redirect(url_for('ResultPage'))
 
+<<<<<<< HEAD
 # test to make sure the controller with database works perfectly
 # get histodata
 def histoDataTest():
@@ -109,6 +121,14 @@ def QuestionTest():
     return Questions
 
 # tests are written in test_app.py
+=======
+@app.route("/add_feedback/<feedbackText>")
+def add_feedback(feedbackText):
+    new = FeedbackDB(feedbackText=feedbackText)
+    db.session.add(new)
+    db.session.commit()
+    return redirect(url_for('FeedbackPage'))
+>>>>>>> d6cdbbcfb1a28495de2265ecc468328149182691
 
 if __name__ == '__main__':
     app.run(debug=True)
